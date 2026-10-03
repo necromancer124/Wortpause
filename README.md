@@ -65,7 +65,7 @@ On Windows Git Bash, use `./gradlew.bat assembleDebug`. The APK is created at `a
 
 ## Automatic releases
 
-Every push runs [the Android release workflow](.github/workflows/android-release.yml). GitHub Actions tests the app, creates an installable APK, saves it as a workflow artifact, and publishes it in a new GitHub Release. No local Android toolchain is needed to download a build.
+Every push runs [the Android release workflow](.github/workflows/android-release.yml). GitHub Actions audits and tests the app, creates a signed installable APK, verifies its signature, saves it as a workflow artifact, and publishes it in a new GitHub Release. Releases use one persistent signing key stored in encrypted repository secrets, so newer APKs can be installed as updates over earlier releases. No local Android toolchain is needed to download a build.
 
 ## Data and privacy
 

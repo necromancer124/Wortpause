@@ -66,17 +66,36 @@ jobs:
       - name: Sync Android project
         run: npm run android:sync
 
-      - name: Build installable APK
+      - name: Restore Android signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/wortpause-release.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/wortpause-release.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed installable APK
         working-directory: android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
+          ANDROID_VERSION_NAME: 1.0.${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
+
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose android/app/build/outputs/apk/release/app-release.apk | tee signature.txt
+          grep -q "Verified using v2 scheme (APK Signature Scheme v2): true" signature.txt
 
       - name: Prepare APK
         id: apk
         run: |
           mkdir -p release
-          cp android/app/build/outputs/apk/debug/app-debug.apk release/Wortpause-Android.apk
+          cp android/app/build/outputs/apk/release/app-release.apk release/Wortpause-Android.apk
           echo "sha256=$(sha256sum release/Wortpause-Android.apk | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
       - name: Upload workflow artifact
