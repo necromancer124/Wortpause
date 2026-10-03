@@ -1,0 +1,11 @@
+WORTPAUSE — ANDROID INSTALLATION
+
+1. Send Wortpause-Android-v1.0.apk to the Android phone.
+2. Open the APK from Downloads, Files, WhatsApp, Telegram, or email.
+3. If Android blocks it, tap Settings and allow “Install unknown apps” for the app you opened it from.
+4. Return to the APK and tap Install.
+5. Open Wortpause. All 813 cards and pronunciation files are included and work offline.
+
+Android may display a warning because this is a privately shared app and is not downloaded from Google Play. Only install the APK received directly from Nir.
+
+The app requires Android 7.0 or newer. Learning progress is stored only on that phone.

@@ -1,0 +1,12 @@
+{
+  "name": "Wortpause — German A1 Cards",
+  "short_name": "Wortpause",
+  "description": "Learn German A1 vocabulary in spare moments, even offline.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3efe5",
+  "theme_color": "#173f36",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

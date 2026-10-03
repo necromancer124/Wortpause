@@ -1,0 +1,96 @@
+name: Build and release Android APK
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    name: Test, build, and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;35.0.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Sync Android project
+        run: npm run android:sync
+
+      - name: Build installable APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Prepare APK
+        id: apk
+        run: |
+          mkdir -p release
+          cp android/app/build/outputs/apk/debug/app-debug.apk release/Wortpause-Android.apk
+          echo "sha256=$(sha256sum release/Wortpause-Android.apk | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wortpause-Android-${{ github.run_number }}
+          path: release/Wortpause-Android.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APK_SHA256: ${{ steps.apk.outputs.sha256 }}
+        run: |
+          TAG="build-${GITHUB_RUN_NUMBER}"
+          cat > release-notes.md <<EOF
+          Automated Android build from commit ${GITHUB_SHA}.
+
+          - Install file: \`Wortpause-Android.apk\`
+          - Minimum Android version: Android 7.0
+          - SHA-256: \`${APK_SHA256}\`
+
+          Android may ask you to allow installation from your browser or file manager because this app is distributed outside Google Play.
+          EOF
+          gh release create "$TAG" \
+            "release/Wortpause-Android.apk#Wortpause-Android.apk" \
+            --target "$GITHUB_SHA" \
+            --title "Wortpause Build #${GITHUB_RUN_NUMBER}" \
+            --notes-file release-notes.md \
+            --latest

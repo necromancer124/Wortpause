@@ -1,0 +1,9 @@
+{
+  "appId": "com.wortpause.app",
+  "appName": "Wortpause",
+  "webDir": "www",
+  "backgroundColor": "#f3efe5",
+  "android": {
+    "backgroundColor": "#f3efe5"
+  }
+}

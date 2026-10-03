@@ -1,0 +1,23 @@
+{
+  "name": "wortpause",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:data": "node scripts/build-data.js",
+    "build:mobile": "node scripts/build-mobile.js",
+    "android:sync": "npm run build:mobile && cap sync android",
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug",
+    "test": "node --test",
+    "test:e2e": "playwright test",
+    "serve": "npx --yes serve . -l 4173"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.3",
+    "@playwright/test": "^1.63.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  }
+}

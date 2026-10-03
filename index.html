@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173f36">
+  <meta name="description" content="A calm, offline German A1 flashcard app for spare moments.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Wortpause — German A1 cards</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="." aria-label="Wortpause home">
+        <span class="brand-mark" aria-hidden="true">W</span>
+        <span>Wortpause</span>
+      </a>
+      <div class="header-actions">
+        <button id="install-button" class="text-button" hidden>Install</button>
+        <button id="words-button" class="text-button" aria-label="Browse all words">Words</button>
+        <button id="help-button" class="icon-button help-button" aria-label="How the app works" title="How it works">?</button>
+        <button id="settings-button" class="icon-button" aria-label="Open settings" title="Settings">•••</button>
+      </div>
+    </header>
+
+    <main id="study-screen" class="study-screen" aria-live="polite">
+      <section class="session-strip" aria-label="Session progress">
+        <div>
+          <span id="session-label">Today’s pause</span>
+          <strong id="session-count">0 / 10</strong>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </section>
+
+      <section id="loading" class="state-card">
+        <span class="loading-dot"></span>
+        <p>Preparing your cards…</p>
+      </section>
+
+      <section id="card-area" class="card-area" hidden>
+        <div id="flashcard" class="flashcard" tabindex="0">
+          <div class="card-meta">
+            <span id="side-label">German</span>
+            <button id="audio-button" class="audio-button" aria-label="Play German audio" title="Play audio">
+              <span aria-hidden="true">▶</span> Listen
+            </button>
+          </div>
+          <div class="card-content">
+            <p id="front-word" class="word"></p>
+            <p id="front-example" class="example"></p>
+          </div>
+          <div id="answer" class="answer" hidden>
+            <div class="answer-divider"><span>Answer</span></div>
+            <p id="back-word" class="translation"></p>
+            <p id="back-example" class="example translation-example"></p>
+            <p id="note" class="note" hidden></p>
+          </div>
+        </div>
+
+        <button id="reveal-button" class="primary-button">Show answer <kbd>Space</kbd></button>
+        <div id="rating-buttons" class="rating-grid" hidden>
+          <button data-rating="again"><span>Again</span><small>1 min</small></button>
+          <button data-rating="hard"><span>Hard</span><small>slow</small></button>
+          <button data-rating="good" class="recommended"><span>Good</span><small>normal</small></button>
+          <button data-rating="easy"><span>Easy</span><small>long</small></button>
+        </div>
+        <p class="keyboard-hint">Space to reveal · 1–4 to rate</p>
+      </section>
+
+      <section id="complete" class="complete-card" hidden>
+        <span class="complete-mark" aria-hidden="true">✓</span>
+        <p class="eyebrow">Pause well spent</p>
+        <h1>Session complete.</h1>
+        <p id="complete-copy"></p>
+        <div class="complete-stats">
+          <div><strong id="complete-count">0</strong><span>cards</span></div>
+          <div><strong id="streak-count">0</strong><span>day streak</span></div>
+        </div>
+        <button id="more-button" class="primary-button">Study 5 more</button>
+      </section>
+    </main>
+
+    <footer>
+      <span>813 Goethe A1 examples</span>
+      <button id="about-button" class="link-button">Source & licence</button>
+    </footer>
+  </div>
+
+  <dialog id="help-dialog">
+    <form method="dialog" class="dialog-card help-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Quick guide</p><h2>How Wortpause works</h2></div>
+        <button class="icon-button close-button" value="close" aria-label="Close">×</button>
+      </div>
+      <ol class="guide-steps">
+        <li><span>1</span><div><strong>Read and remember</strong><p>Read the word and example. Tap <b>Listen</b> to hear the German pronunciation.</p></div></li>
+        <li><span>2</span><div><strong>Check yourself</strong><p>Think of the translation, then tap <b>Show the answer</b>.</p></div></li>
+        <li><span>3</span><div><strong>Rate honestly</strong><p>Your rating decides when the word returns.</p></div></li>
+      </ol>
+      <div class="rating-explainer">
+        <p><strong>Again</strong><span>You forgot it. See it again soon.</span></p>
+        <p><strong>Hard</strong><span>You remembered with effort.</span></p>
+        <p><strong>Good</strong><span>You remembered normally.</span></p>
+        <p><strong>Easy</strong><span>You knew it immediately.</span></p>
+      </div>
+      <p class="privacy-note">Your progress stays on this device. After the first load, the cards also work offline.</p>
+      <button class="primary-button" value="close">Start learning</button>
+    </form>
+  </dialog>
+
+  <dialog id="words-dialog" class="words-dialog">
+    <div class="dialog-card words-card">
+      <div class="dialog-heading words-heading">
+        <div><p class="eyebrow">A1 vocabulary</p><h2>All words</h2></div>
+        <button id="close-words" class="icon-button close-button" aria-label="Close">×</button>
+      </div>
+      <label class="search-field">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="word-search" type="search" aria-label="Search German or English" placeholder="Search German or English…" autocomplete="off">
+      </label>
+      <p id="word-count" class="word-count">813 words</p>
+      <div id="word-list" class="word-list" aria-live="polite"></div>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Preferences</p><h2>Your daily pause</h2></div>
+        <button class="icon-button close-button" value="close" aria-label="Close">×</button>
+      </div>
+      <label>Cards per session
+        <select id="goal-select"><option value="5">5 cards</option><option value="10">10 cards</option><option value="20">20 cards</option></select>
+      </label>
+      <fieldset>
+        <legend>Card direction</legend>
+        <label class="radio-row"><input type="radio" name="direction" value="de-en"> German → English</label>
+        <label class="radio-row"><input type="radio" name="direction" value="en-de"> English → German</label>
+      </fieldset>
+      <label class="check-row"><input id="autoplay-check" type="checkbox"> Play audio when a German card appears</label>
+      <button id="save-settings" class="primary-button" value="save">Save preferences</button>
+      <button id="reset-button" class="danger-button" type="button">Reset all learning progress</button>
+    </form>
+  </dialog>
+
+  <dialog id="about-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading"><div><p class="eyebrow">About</p><h2>Words with a source</h2></div><button class="icon-button close-button" value="close" aria-label="Close">×</button></div>
+      <p>Vocabulary, example sentences, translations, and audio are adapted from <a href="https://github.com/patsytau/anki_german_a1_vocab" target="_blank" rel="noreferrer">Goethe Institute A1 Wordlist</a> by Patrizia, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</p>
+      <p>Your learning progress stays only on this device.</p>
+      <button class="primary-button" value="close">Done</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
