@@ -10,6 +10,8 @@
 
 Wortpause is a mobile-first flashcard app with the complete Goethe A1 German vocabulary deck. It includes pronunciation, example sentences, a searchable word browser, and simple spaced repetition—all available offline.
 
+(it was made specifically for my friend)
+
 ## Download for Android
 
 Download **`Wortpause-Android.apk`** from the [latest release](https://github.com/necromancer124/Wortpause/releases/latest).
